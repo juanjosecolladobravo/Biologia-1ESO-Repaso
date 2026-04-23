@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioFlow — Biología 1º ESO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fraunces:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#2d6a4f;--green-mid:#40916c;--green-light:#74c69d;--green-pale:#d8f3dc;
+  --blue:#1a6fb5;--blue-light:#90e0ef;--blue-pale:#caf0f8;
+  --amber:#e76f51;--amber-light:#f4a261;--amber-pale:#ffddd2;
+  --purple:#7b2d8b;--purple-light:#c77dff;--purple-pale:#f0d6ff;
+  --teal:#0a9396;--teal-light:#94d2bd;--teal-pale:#d9ece8;
+  --pink:#e63946;--pink-light:#ff8fa3;--pink-pale:#ffe0e6;
+  --bg:#f0f7f0;--surface:#ffffff;--text:#1a2e1a;--text-mid:#3d6b3d;--text-light:#6b9e6b;
+  --font:'Nunito',sans-serif;--serif:'Fraunces',Georgia,serif;
+  --r:16px;--r-lg:24px;--r-xl:32px;
+  --sh:0 4px 24px rgba(0,0,0,0.08),0 1px 6px rgba(0,0,0,0.05);
+  --sh-lg:0 12px 48px rgba(0,0,0,0.12),0 4px 16px rgba(0,0,0,0.07);
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+#root{min-height:100vh}
+
+/* BACKGROUNDS */
+.nature-bg{
+  position:fixed;inset:0;z-index:0;overflow:hidden;
+  background:linear-gradient(160deg,#e8f5e9 0%,#f0f7f0 40%,#e0f2f1 100%);
+}
+.nature-bg::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle at 15% 20%,rgba(116,198,157,0.18) 0%,transparent 40%),
+    radial-gradient(circle at 85% 10%,rgba(144,224,239,0.15) 0%,transparent 35%),
+    radial-gradient(circle at 70% 80%,rgba(196,166,255,0.12) 0%,transparent 40%),
+    radial-gradient(circle at 10% 85%,rgba(231,111,81,0.10) 0%,transparent 35%);
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideRight{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideLeft{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pop{0%{transform:scale(0.4);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes star-burst{0%{transform:scale(0) rotate(0deg);opacity:1}100%{transform:scale(2) rotate(180deg);opacity:0}}
+@keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-16px)}60%{transform:translateY(-8px)}}
+@keyframes wiggle{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+@keyframes draw{from{stroke-dashoffset:1000}to{stroke-dashoffset:0}}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 4px rgba(116,198,157,0.4))}50%{filter:drop-shadow(0 0 14px rgba(116,198,157,0.8))}}
+@keyframes confetti-drop{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100px) rotate(720deg);opacity:0}}
+@keyframes heart-pop{0%{transform:scale(0);opacity:0}50%{transform:scale(1.3);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes xp-float{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-60px);opacity:0}}
+
+/* GLASS CARD */
+.card{background:rgba(255,255,255,0.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,0.9);border-radius:var(--r-xl);box-shadow:var(--sh)}
+.card-dark{background:rgba(20,46,20,0.82);backdrop-filter:blur(16px);border:1.5px solid rgba(116,198,157,0.25);border-radius:var(--r-xl);box-shadow:var(--sh-lg)}
+
+/* BUTTONS */
+button{font-family:var(--font);cursor:pointer;border:none;transition:transform .15s,box-shadow .15s,opacity .15s,background .2s}
+button:active{transform:scale(0.94)!important}
+.btn-main{background:var(--green);color:white;font-size:17px;font-weight:800;padding:16px 32px;border-radius:50px;box-shadow:0 4px 20px rgba(45,106,79,0.35),0 2px 6px rgba(45,106,79,0.2)}
+.btn-main:hover{background:var(--green-mid);transform:translateY(-2px);box-shadow:0 8px 28px rgba(45,106,79,0.4)}
+.btn-soft{background:var(--green-pale);color:var(--green);font-size:14px;font-weight:700;padding:10px 20px;border-radius:50px;border:2px solid rgba(45,106,79,0.15)}
+.btn-soft:hover{background:#c4ebd0;transform:translateY(-1px)}
+.btn-opt{background:white;border:2.5px solid #d4e8d4;border-radius:var(--r-lg);padding:14px 18px;font-size:15px;font-weight:600;color:var(--text);width:100%;text-align:left;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:all .2s}
+.btn-opt:hover:not(:disabled){border-color:var(--green-light);background:#f0faf3;transform:translateY(-2px);box-shadow:0 6px 20px rgba(45,106,79,0.12)}
+.btn-opt.correct{border-color:var(--green-mid)!important;background:var(--green-pale)!important;animation:pulse .4s ease}
+.btn-opt.wrong{border-color:#e63946!important;background:#ffe0e6!important;animation:shake .4s ease}
+.btn-opt.reveal{border-color:var(--green-mid)!important;background:var(--green-pale)!important}
+.btn-opt:disabled{cursor:default}
+.btn-hint{background:#fff8e6;color:#8b6000;font-size:13px;font-weight:700;padding:9px 16px;border-radius:50px;border:2px solid rgba(231,176,0,0.25)}
+.btn-hint:hover{background:#fff0c0}
+
+/* NAV */
+.nav-dot{width:9px;height:9px;border-radius:50%;border:none;cursor:pointer;transition:all .3s cubic-bezier(.34,1.56,.64,1);padding:0;flex-shrink:0}
+
+/* PROGRESS BAR */
+.xp-bar{height:12px;background:rgba(0,0,0,0.08);border-radius:100px;overflow:hidden;position:relative}
+.xp-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--green-light),var(--green));transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:50px;font-size:12px;font-weight:800;letter-spacing:.3px}
+
+/* INFOGRAPHIC CELLS */
+.info-cell{background:white;border-radius:var(--r);padding:16px;border:1.5px solid rgba(0,0,0,0.06);box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--green-light);border-radius:100px}
+</style>
+</head>
+<body>
+<div class="nature-bg"></div>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback,useMemo}=React;
+
+/* ═══════════════════════════════════════════════
+   TOPIC DATA — 6 topics with infographics + quizzes
+═══════════════════════════════════════════════ */
+const TOPICS=[
+  {
+    id:'celula',
+    emoji:'🔬',
+    title:'La Célula',
+    subtitle:'La unidad básica de la vida',
+    color:'#2d6a4f',colorLight:'#d8f3dc',colorMid:'#74c69d',
+    gradient:'linear-gradient(135deg,#2d6a4f,#40916c)',
+    xpColor:'#40916c',
+    infographic:'CellInfograhic',
+    summary:`La **célula** es la unidad mínima de vida: la estructura más pequeña capaz de realizar por sí sola todas las funciones vitales (nutrición, relación y reproducción). Todos los seres vivos —desde una bacteria hasta un ser humano— estamos formados por células. El cuerpo humano contiene aproximadamente **37 billones** de células de más de 200 tipos distintos.
+
+Según su complejidad, distinguimos dos grandes grupos. Las **células procariotas** son las más primitivas y sencillas: no tienen núcleo definido, su material genético (ADN) flota libremente en el citoplasma. Las bacterias son el ejemplo más representativo. Las **células eucariotas** son más complejas y evolucionadas: poseen un núcleo verdadero rodeado por una membrana nuclear que protege el ADN. A este grupo pertenecen las células de animales, plantas, hongos y protistas.
+
+Dentro de las eucariotas, distinguimos la **célula animal** y la **célula vegetal**. Ambas comparten estructuras básicas: membrana celular, citoplasma, núcleo, mitocondrias y ribosomas. Sin embargo, la célula vegetal posee tres estructuras exclusivas: la **pared celular** (capa rígida de celulosa que rodea a la membrana y da forma a la célula), los **cloroplastos** (donde se realiza la fotosíntesis gracias a la clorofila) y una gran **vacuola central** que puede ocupar hasta el 90% del volumen celular y almacena agua y sustancias de reserva.
+
+Los **orgánulos** son estructuras especializadas que flotan en el citoplasma y realizan funciones concretas. Los más importantes son: el **núcleo** (centro de control, contiene el ADN con toda la información genética necesaria para fabricar proteínas y reproducirse), las **mitocondrias** (centrales energéticas que producen ATP mediante la respiración celular; cuanto más activa es una célula, más mitocondrias tiene), el **retículo endoplasmático** (sistema de canales para transportar sustancias), el **aparato de Golgi** (empaqueta y envía proteínas a su destino) y los **ribosomas** (fabrican proteínas siguiendo las instrucciones del ADN).
+
+La **membrana celular** es una estructura fundamental presente en todas las células. Está formada por una doble capa de lípidos con proteínas incrustadas, y su función principal es actuar como barrera selectiva: deja entrar los nutrientes que la célula necesita y expulsa los desechos, manteniendo el equilibrio interno de la célula (homeostasis).`,
+    keypoints:[
+      {icon:'🏠',label:'Membrana celular',desc:'Envuelve y protege la célula, controla lo que entra y sale'},
+      {icon:'🧬',label:'Núcleo',desc:'Centro de control: contiene el ADN con toda la información genética'},
+      {icon:'⚡',label:'Mitocondria',desc:'Central energética: produce ATP (energía) mediante la respiración celular'},
+      {icon:'🌿',label:'Cloroplasto',desc:'Solo en vegetales: capta la luz solar para hacer la fotosíntesis'},
+      {icon:'🧱',label:'Pared celular',desc:'Solo en plantas y hongos: capa rígida exterior que da forma y protección'},
+      {icon:'💧',label:'Vacuola',desc:'Almacena agua, nutrientes y desechos (muy grande en células vegetales)'},
+    ],
+    questions:[
+      {q:'¿Cuál es la unidad básica de todos los seres vivos?',opts:['El átomo','La célula','El tejido','El órgano'],ans:1,hint:'Es la estructura más pequeña capaz de realizar todas las funciones vitales por sí sola.',reward:'🔬'},
+      {q:'¿Qué tipo de célula NO tiene núcleo definido?',opts:['Célula animal','Célula vegetal','Célula procariota','Célula eucariota'],ans:2,hint:'Las bacterias son el ejemplo más conocido de este tipo. Su material genético flota libremente en el citoplasma.',reward:'🦠'},
+      {q:'¿Qué orgánulo produce la energía (ATP) en la célula?',opts:['El núcleo','El cloroplasto','La vacuola','La mitocondria'],ans:3,hint:'Se le llama "la central energética de la célula". Realiza la respiración celular.',reward:'⚡'},
+      {q:'¿Qué orgánulo es exclusivo de las células vegetales y realiza la fotosíntesis?',opts:['La mitocondria','El ribosoma','El cloroplasto','El centrosoma'],ans:2,hint:'Contiene clorofila, el pigmento verde que captura la energía lumínica.',reward:'🌿'},
+      {q:'¿Qué estructura controla lo que entra y sale de la célula?',opts:['La pared celular','La membrana celular','El núcleo','El retículo endoplasmático'],ans:1,hint:'Es como la "puerta" de la célula. Está presente en TODAS las células.',reward:'🚪'},
+      {q:'¿En qué se diferencia principalmente una célula animal de una vegetal?',opts:['La animal tiene núcleo y la vegetal no','La vegetal tiene cloroplastos y pared celular','La animal tiene mitocondrias y la vegetal no','No hay ninguna diferencia'],ans:1,hint:'Piensa en qué tiene una planta que un animal no tiene: color verde y rigidez.',reward:'🌱'},
+      {q:'¿Cómo se llama la sustancia gelatinosa donde flotan los orgánulos?',opts:['Citoplasma','Nucleoplasma','Plasma sanguíneo','Linfa'],ans:0,hint:'Ocupa el interior de la célula y es el "caldo" donde viven los orgánulos.',reward:'💧'},
+      {q:'¿Qué contiene el núcleo celular?',opts:['Glucosa y agua','ATP y oxígeno','ADN con la información genética','Proteínas digestivas'],ans:2,hint:'Es el "cerebro" de la célula porque contiene las instrucciones para fabricar proteínas y reproducirse.',reward:'🧬'},
+      {q:'¿Cuántas células tiene aproximadamente el cuerpo humano?',opts:['Miles','Millones','37 billones','100 billones de billones'],ans:2,hint:'Es un número enorme: aproximadamente 37.000.000.000.000 células.',reward:'🤯'},
+      {q:'¿Qué orgánulo almacena agua y nutrientes, siendo especialmente grande en plantas?',opts:['Mitocondria','Vacuola','Ribosoma','Aparato de Golgi'],ans:1,hint:'En una célula vegetal madura puede ocupar hasta el 90% del volumen celular.',reward:'🫧'},
+    ]
+  },
+  {
+    id:'seres_vivos',
+    emoji:'🌿',
+    title:'Los Seres Vivos',
+    subtitle:'Características y clasificación',
+    color:'#0a9396',colorLight:'#d9ece8',colorMid:'#94d2bd',
+    gradient:'linear-gradient(135deg,#0a9396,#52b69a)',
+    xpColor:'#0a9396',
+    infographic:'LivingInfograhic',
+    summary:`Un **ser vivo** es todo aquel ser que está formado por células y es capaz de realizar las **tres funciones vitales**: nutrición, relación y reproducción. A diferencia de la materia inerte (una piedra, el agua), los seres vivos se organizan, intercambian materia y energía con el entorno, responden a estímulos y se perpetúan generando descendencia.
+
+La **función de nutrición** consiste en obtener materia y energía del entorno para construir las propias estructuras, crecer y mantenerse vivos. Según cómo obtienen esa energía, los seres vivos se dividen en dos grandes grupos: los **autótrofos** (como las plantas y las algas), que fabrican su propio alimento a partir de sustancias inorgánicas usando la energía del sol mediante la fotosíntesis, y los **heterótrofos** (como los animales, hongos y muchas bacterias), que deben alimentarse de otros seres vivos o de materia orgánica ya fabricada.
+
+La **función de relación** permite a los seres vivos captar información del medio (estímulos como la luz, el calor, los sonidos, el tacto) y responder a ella. En los animales esta función la realiza el sistema nervioso. En las plantas, aunque no tienen nervios, también responden a los estímulos: crecen hacia la luz (fototropismo), sus raíces crecen hacia el agua (hidrotropismo) o cierran sus flores por la noche.
+
+La **función de reproducción** garantiza la continuidad de la especie. Existen dos tipos: la **reproducción sexual** (intervienen dos progenitores y hay intercambio de material genético, lo que genera variabilidad) y la **reproducción asexual** (un solo individuo origina descendientes idénticos a él, como en la división bacteriana o los esquejes de plantas).
+
+Para clasificar la enorme diversidad de seres vivos, los científicos los agrupan en **5 reinos**. El **reino Moneras** incluye a las bacterias, los organismos más primitivos: procariotas, unicelulares, sin núcleo definido. El **reino Protistas** agrupa a organismos eucariotas unicelulares o pluricelulares simples, como las amebas o las algas unicelulares. El **reino Fungi** reúne a los hongos: eucariotas, heterótrofos (se alimentan absorbiendo materia orgánica), con pared celular de quitina. El **reino Vegetal** engloba a las plantas: eucariotas, pluricelulares, autótrofas, con pared celular de celulosa. El **reino Animal** agrupa a los animales: eucariotas, pluricelulares, heterótrofos, capaces de moverse libremente.
+
+Mención especial merecen los **virus**: no se consideran seres vivos porque no tienen estructura celular propia y solo pueden reproducirse dentro de una célula huésped. Son parásitos intracelulares obligatorios.`,
+    keypoints:[
+      {icon:'🍽️',label:'Nutrición',desc:'Obtener materia y energía del entorno para sobrevivir y crecer'},
+      {icon:'👀',label:'Relación',desc:'Captar estímulos del entorno y responder a ellos (moverse, crecer hacia la luz…)'},
+      {icon:'👶',label:'Reproducción',desc:'Generar nuevos individuos para que la especie no se extinga'},
+      {icon:'🐾',label:'Reino Animal',desc:'Pluricelulares, eucariotas, heterótrofos, se mueven libremente'},
+      {icon:'🌲',label:'Reino Vegetal',desc:'Pluricelulares, eucariotas, autótrofos (fotosíntesis), no se mueven'},
+      {icon:'🍄',label:'Hongos, Protistas y Moneras',desc:'Otros tres reinos: descomponedores, unicelulares o pluricelulares simples'},
+    ],
+    questions:[
+      {q:'¿Cuáles son las tres funciones vitales de los seres vivos?',opts:['Moverse, crecer y comer','Nutrición, relación y reproducción','Respirar, dormir y alimentarse','Nacer, crecer y morir'],ans:1,hint:'Son las funciones que realiza TODO ser vivo sin excepción, incluso las plantas.',reward:'✨'},
+      {q:'¿Cuántos reinos se distinguen en la clasificación de los seres vivos?',opts:['3','4','5','7'],ans:2,hint:'Animal, Vegetal, Fungi (hongos), Protistas y Moneras (bacterias).',reward:'🌍'},
+      {q:'¿Cómo se llaman los seres vivos que fabrican su propio alimento?',opts:['Heterótrofos','Saprofitos','Autótrofos','Parásitos'],ans:2,hint:'Las plantas son el ejemplo más claro: usan la luz solar para fabricar glucosa.',reward:'☀️'},
+      {q:'¿Qué función vital permite a las especies no desaparecer?',opts:['La nutrición','La relación','La reproducción','La excreción'],ans:2,hint:'Sin ella, cuando los individuos muriesen no habría reemplazos y la especie se extinguiría.',reward:'🐣'},
+      {q:'¿A qué reino pertenecen las setas y los hongos?',opts:['Reino Animal','Reino Vegetal','Reino Fungi','Reino Moneras'],ans:2,hint:'Tienen un reino propio porque no hacen fotosíntesis (no son vegetales) ni se mueven (no son animales).',reward:'🍄'},
+      {q:'¿Qué tienen en común TODOS los seres vivos sin excepción?',opts:['Tienen sangre','Están formados por células','Se mueven','Tienen cerebro'],ans:1,hint:'Incluso las bacterias, que son los más simples, están formadas por al menos una de ellas.',reward:'🔬'},
+      {q:'¿Cómo se llaman los organismos formados por una sola célula?',opts:['Pluricelulares','Unicelulares','Procariotas','Eucariotas'],ans:1,hint:'El prefijo "uni-" significa uno. Las amebas y bacterias son ejemplos.',reward:'🦠'},
+      {q:'¿Cuál es la función de relación en las plantas?',opts:['Las plantas no tienen función de relación','Crecer hacia la luz (fototropismo)','Absorber agua por las raíces','Realizar la fotosíntesis'],ans:1,hint:'¿Has visto cómo las plantas siempre crecen hacia la ventana? Eso es responder a un estímulo.',reward:'🌻'},
+      {q:'¿Qué reino agrupa a los organismos más simples, sin núcleo definido?',opts:['Protistas','Fungi','Moneras','Animalia'],ans:2,hint:'Son los procariotas: bacterias y arqueas. Los más primitivos de todos.',reward:'🧫'},
+      {q:'Un virus, ¿es un ser vivo?',opts:['Sí, porque tiene ADN','Sí, porque se reproduce','No, porque no realiza todas las funciones vitales por sí solo','No, porque no tiene células'],ans:2,hint:'Los virus necesitan infectar a una célula viva para reproducirse. No pueden hacerlo solos.',reward:'🤔'},
+    ]
+  },
+  {
+    id:'ecosistemas',
+    emoji:'🌍',
+    title:'Los Ecosistemas',
+    subtitle:'Seres vivos y su entorno',
+    color:'#1a6fb5',colorLight:'#caf0f8',colorMid:'#90e0ef',
+    gradient:'linear-gradient(135deg,#1a6fb5,#0096c7)',
+    xpColor:'#1a6fb5',
+    infographic:'EcoInfograhic',
+    summary:`Un **ecosistema** es el sistema natural formado por el conjunto de seres vivos que habitan en un lugar (**biocenosis**) y el medio físico que los rodea (**biotopo**), junto con todas las interacciones que se establecen entre ellos. Un bosque, un lago, un arrecife de coral o incluso un charco son ejemplos de ecosistemas.
+
+El **biotopo** es el componente no vivo (abiótico) del ecosistema: incluye factores como la temperatura, la humedad, la cantidad de luz solar, el tipo de suelo, la salinidad del agua o la altitud. Estos factores determinan qué seres vivos pueden vivir en ese lugar. La **biocenosis** es el componente vivo (biótico): la comunidad de todos los seres vivos que habitan ese biotopo, desde las bacterias del suelo hasta los grandes depredadores.
+
+Dentro de la biocenosis, cada especie ocupa un **hábitat** (el lugar físico concreto donde vive) y un **nicho ecológico** (el papel que desempeña en el ecosistema: qué come, de qué es comido, cómo se relaciona con otros). Dos especies con el mismo nicho ecológico compiten entre sí.
+
+Las relaciones de alimentación se organizan en **cadenas tróficas**, que representan el flujo de materia y energía desde los productores hasta los grandes depredadores. En ellas distinguimos cuatro niveles. Los **productores** (plantas, algas) son el primer eslabón: fabrican materia orgánica a partir de materia inorgánica usando la energía solar. Los **consumidores primarios** (herbívoros: conejos, vacas, orugas) se alimentan directamente de los productores. Los **consumidores secundarios** (carnívoros de primer orden: zorros, ranas, arañas) comen a los herbívoros. Los **consumidores terciarios** (grandes carnívoros: águilas, tiburones, leones) están en lo alto de la cadena. Por último, los **descomponedores** (hongos y bacterias) degradan la materia orgánica muerta y devuelven los nutrientes al suelo, cerrando el ciclo.
+
+La **energía** entra en el ecosistema a través del sol y fluye en una sola dirección: de los productores hacia los consumidores. En cada nivel trófico se pierde aproximadamente el **90% de la energía** en forma de calor, por lo que solo el 10% pasa al siguiente nivel. Esto explica por qué las cadenas tróficas raramente superan los 4-5 eslabones y por qué hay muchas más plantas que herbívoros, y muchos más herbívoros que carnívoros (pirámide trófica).
+
+A diferencia de la energía, la **materia sí se recicla** en los ecosistemas a través de los ciclos biogeoquímicos. En el **ciclo del carbono**, las plantas absorben CO₂ del aire durante la fotosíntesis; los animales lo devuelven al respirar; y los descomponedores liberan el carbono de los organismos muertos. En el **ciclo del agua**, el agua se evapora, forma nubes, precipita y vuelve a los seres vivos a través del suelo y los ríos.
+
+Entre los seres vivos de un ecosistema se establecen diversas **relaciones interespecíficas**: el **mutualismo** (ambas especies se benefician, como las flores y las abejas), el **comensalismo** (una se beneficia y la otra no se ve afectada), el **parasitismo** (una se beneficia a expensas de la otra) y la **depredación** (un individuo caza y se come a otro).`,
+    keypoints:[
+      {icon:'🌳',label:'Productores',desc:'Plantas y algas: fabrican materia orgánica mediante fotosíntesis'},
+      {icon:'🐰',label:'Consumidores primarios',desc:'Herbívoros que comen plantas (conejos, vacas, orugas…)'},
+      {icon:'🦊',label:'Consumidores secundarios',desc:'Carnívoros que comen herbívoros (zorros, ranas, serpientes…)'},
+      {icon:'🦅',label:'Consumidores terciarios',desc:'Grandes depredadores que están en lo alto de la cadena (águila, tiburón…)'},
+      {icon:'🍂',label:'Descomponedores',desc:'Hongos y bacterias: descomponen materia muerta y liberan nutrientes al suelo'},
+      {icon:'☀️',label:'Flujo de energía',desc:'La energía entra por el sol, fluye por la cadena y se pierde en cada nivel'},
+    ],
+    questions:[
+      {q:'¿Cómo se llama el conjunto de seres vivos que habitan en un ecosistema?',opts:['Biotopo','Biocenosis','Biosfera','Hábitat'],ans:1,hint:'"Bio" viene del griego bios (vida). La biocenosis es la comunidad de seres vivos, no el medio físico.',reward:'🌿'},
+      {q:'¿Qué organismos son los PRODUCTORES en una cadena trófica?',opts:['Los hongos','Los animales herbívoros','Las plantas y algas','Las bacterias descomponedoras'],ans:2,hint:'Son los únicos que fabrican su propio alimento gracias a la energía solar.',reward:'🌱'},
+      {q:'En la cadena: hierba → conejo → zorro → águila. ¿Qué es el conejo?',opts:['Productor','Consumidor primario','Consumidor secundario','Descomponedor'],ans:1,hint:'El conejo come directamente a los productores (la hierba). Es el primer nivel de consumo.',reward:'🐰'},
+      {q:'¿Qué papel cumplen los hongos y bacterias en el ecosistema?',opts:['Productores','Consumidores primarios','Consumidores terciarios','Descomponedores'],ans:3,hint:'Sin ellos, los bosques estarían llenos de cadáveres y hojas muertas que nunca se reciclarían.',reward:'🍄'},
+      {q:'¿De dónde proviene la energía que entra en casi todos los ecosistemas?',opts:['Del núcleo de la Tierra','Del agua','Del Sol','Del viento'],ans:2,hint:'Las plantas capturan esta energía mediante la fotosíntesis y la convierten en materia orgánica.',reward:'☀️'},
+      {q:'¿Qué es el biotopo de un ecosistema?',opts:['Los seres vivos del ecosistema','El medio físico (agua, temperatura, suelo…)','Las relaciones entre especies','Los depredadores del ecosistema'],ans:1,hint:'"Topo" viene del griego topos (lugar). Es el lugar, no los seres que lo habitan.',reward:'🪨'},
+      {q:'Si desaparecieran los conejos de la cadena hierba→conejo→zorro, ¿qué pasaría con los zorros?',opts:['Nada, se adaptarían','Aumentarían al no tener competencia','Disminuirían por falta de alimento','Comerían más hierba'],ans:2,hint:'Piensa: si desaparece tu alimento principal, ¿qué te pasaría a ti?',reward:'🦊'},
+      {q:'¿Cómo se llama el lugar específico donde vive una especie dentro del ecosistema?',opts:['Ecosistema','Nicho ecológico','Hábitat','Bioma'],ans:2,hint:'Es la "dirección" de un ser vivo dentro del ecosistema. Por ejemplo, el hábitat del oso pardo son los bosques.',reward:'🏠'},
+      {q:'¿Qué relación existe entre un pulpo y una bacteria que vive dentro de él sin hacerle daño ni ayudarle?',opts:['Depredación','Mutualismo','Comensalismo','Parasitismo'],ans:2,hint:'Uno se beneficia (la bacteria tiene hogar y alimento) y el otro no se ve afectado.',reward:'🤝'},
+      {q:'¿Qué ocurre con la energía a medida que sube en la cadena trófica?',opts:['Aumenta','Se mantiene igual','Disminuye (se pierde calor)','Se convierte en luz'],ans:2,hint:'En cada nivel trófico, aproximadamente el 90% de la energía se pierde en forma de calor.',reward:'🌡️'},
+    ]
+  },
+  {
+    id:'cuerpo_humano',
+    emoji:'🫀',
+    title:'El Cuerpo Humano',
+    subtitle:'Órganos, aparatos y sistemas',
+    color:'#e63946',colorLight:'#ffe0e6',colorMid:'#ff8fa3',
+    gradient:'linear-gradient(135deg,#c1121f,#e63946)',
+    xpColor:'#e63946',
+    infographic:'BodyInfograhic',
+    summary:`El cuerpo humano está organizado en niveles de complejidad creciente: **células** → **tejidos** (conjunto de células similares con una misma función, como el tejido muscular o el nervioso) → **órganos** (conjunto de tejidos que forman una estructura con función propia, como el corazón o el estómago) → **aparatos y sistemas** (conjunto de órganos que cooperan para realizar una función compleja). Conocer esta organización es fundamental para entender cómo funciona nuestro cuerpo.
+
+El **aparato digestivo** transforma los alimentos en nutrientes que la sangre puede transportar y las células aprovechar. El proceso comienza en la **boca**, donde los dientes trituran el alimento y la saliva inicia la digestión del almidón. El bolo alimenticio pasa por la **faringe** y el **esófago** hasta llegar al **estómago**, donde el ácido clorhídrico y las enzimas gástricas continúan la digestión. El **intestino delgado** (unos 6 metros de longitud) es donde se absorben los nutrientes gracias a las vellosidades intestinales, que aumentan enormemente la superficie de absorción. Finalmente, el **intestino grueso** absorbe el agua y forma las heces, que se eliminan por el ano. Órganos como el **hígado** (produce bilis para emulsionar las grasas) y el **páncreas** (produce enzimas digestivas e insulina) son fundamentales en este proceso.
+
+El **aparato respiratorio** se encarga del intercambio gaseoso: introduce oxígeno (O₂) en la sangre y expulsa dióxido de carbono (CO₂). El aire entra por la **nariz** (se filtra, humedece y calienta), pasa por la **faringe**, la **laringe** (donde están las cuerdas vocales) y la **tráquea**, que se divide en dos **bronquios** que entran en cada pulmón. Dentro de los pulmones, los bronquios se ramifican en bronquiolos hasta llegar a los **alvéolos pulmonares**: millones de pequeños sacos rodeados de capilares sanguíneos donde se produce el intercambio de gases por difusión.
+
+El **aparato circulatorio** transporta oxígeno, nutrientes, hormonas y desechos por todo el organismo. El órgano central es el **corazón**, un músculo involuntario que late unas 70 veces por minuto en reposo (más de 100.000 veces al día). La sangre rica en O₂ sale del corazón por las **arterias**, llega a los tejidos a través de los **capilares** y regresa al corazón por las **venas** ya cargada de CO₂. La **circulación pulmonar** lleva la sangre a los pulmones para oxigenarse. La sangre está formada por plasma, **glóbulos rojos** (transportan O₂), **glóbulos blancos** (defienden de infecciones) y **plaquetas** (permiten la coagulación).
+
+El **aparato excretor** elimina los residuos metabólicos del organismo. Los **riñones** filtran la sangre (unos 180 litros al día) y producen orina, que se conduce por los uréteres hasta la vejiga y se expulsa por la uretra. El hígado también tiene función excretora, eliminando sustancias tóxicas. Los pulmones expulsan CO₂ y la piel elimina agua y sales a través del sudor.
+
+El **sistema nervioso** coordina y controla todas las funciones del organismo. Está formado por el **sistema nervioso central** (encéfalo y médula espinal) y el **sistema nervioso periférico** (nervios que conectan el SNC con el resto del cuerpo). La unidad funcional es la **neurona**, célula especializada en transmitir impulsos nerviosos a gran velocidad. El **sistema endocrino** (hormonas) complementa al nervioso regulando funciones a más largo plazo. El **sistema locomotor**, formado por el esqueleto (206 huesos en el adulto) y los músculos, nos permite movernos y da soporte al cuerpo.`,
+    keypoints:[
+      {icon:'🍽️',label:'Aparato digestivo',desc:'Transforma los alimentos en nutrientes absorbibles: boca→esófago→estómago→intestinos'},
+      {icon:'💨',label:'Aparato respiratorio',desc:'Introduce O₂ y expulsa CO₂: nariz→tráquea→bronquios→alvéolos pulmonares'},
+      {icon:'🫀',label:'Aparato circulatorio',desc:'El corazón bombea sangre que transporta O₂, nutrientes y desechos por todo el cuerpo'},
+      {icon:'🫘',label:'Aparato excretor',desc:'Elimina residuos: riñones filtran la sangre y producen orina'},
+      {icon:'🧠',label:'Sistema nervioso',desc:'El cerebro y los nervios coordinan y controlan todas las funciones del cuerpo'},
+      {icon:'🦴',label:'Sistema locomotor',desc:'Huesos (esqueleto) y músculos permiten el movimiento y dan soporte al cuerpo'},
+    ],
+    questions:[
+      {q:'¿En qué orden pasan los alimentos por el aparato digestivo?',opts:['Estómago→boca→intestino','Boca→esófago→estómago→intestino delgado→intestino grueso','Intestino→estómago→boca','Boca→intestino→estómago'],ans:1,hint:'Sigue el camino lógico: la comida entra por arriba y baja. El esófago conecta la boca con el estómago.',reward:'🍽️'},
+      {q:'¿Dónde se produce el intercambio de O₂ y CO₂ en los pulmones?',opts:['En los bronquios','En la tráquea','En los alvéolos','En la pleura'],ans:2,hint:'Son pequeños sacos de aire rodeados de capilares sanguíneos. Hay millones en cada pulmón.',reward:'💨'},
+      {q:'¿Cuántas veces late el corazón de un adulto aproximadamente por minuto?',opts:['20-30','60-80','120-140','200-220'],ans:1,hint:'En reposo, el corazón late entre 60 y 100 veces por minuto en un adulto sano.',reward:'🫀'},
+      {q:'¿Qué órganos filtran la sangre y producen la orina?',opts:['El hígado y la vesícula','Los pulmones','Los riñones','El páncreas'],ans:2,hint:'Son dos órganos con forma de judía situados en la espalda, a ambos lados de la columna.',reward:'🫘'},
+      {q:'¿Cuál es la función principal del intestino delgado?',opts:['Triturar los alimentos','Absorber los nutrientes hacia la sangre','Eliminar los residuos','Producir bilis'],ans:1,hint:'Mide unos 6 metros. Sus paredes tienen vellosidades intestinales que aumentan la superficie de absorción.',reward:'🌀'},
+      {q:'¿Qué tipo de sangre transportan las arterias?',opts:['Siempre sangre rica en CO₂','Siempre sangre rica en O₂','Sangre del corazón hacia los órganos (generalmente oxigenada)','Sangre de los órganos al corazón'],ans:2,hint:'Las arterias llevan sangre DESDE el corazón. La arteria pulmonar es la excepción (lleva sangre al pulmón para oxigenarse).',reward:'❤️'},
+      {q:'¿Cuál es la neurona y qué hace?',opts:['Célula del hígado que filtra toxinas','Célula del sistema nervioso que transmite impulsos','Célula sanguínea que transporta O₂','Célula muscular que produce movimiento'],ans:1,hint:'El sistema nervioso está formado por miles de millones de estas células especializadas.',reward:'🧠'},
+      {q:'¿Cuántos huesos tiene aproximadamente el esqueleto de un adulto?',opts:['100','206','350','500'],ans:1,hint:'Los bebés nacen con más de 300 huesos, pero algunos se fusionan al crecer, resultando en 206.',reward:'🦴'},
+      {q:'¿Qué glándula produce la insulina, que regula el azúcar en sangre?',opts:['El hígado','La tiroides','El páncreas','Las suprarrenales'],ans:2,hint:'Está detrás del estómago. Además de insulina, produce jugos digestivos.',reward:'🩸'},
+      {q:'¿Cómo se llama el músculo involuntario que bombea la sangre?',opts:['El diafragma','El bíceps','El corazón','El estómago'],ans:2,hint:'Es el único músculo del que depende nuestra vida directamente. Trabaja sin descanso 24 horas.',reward:'💓'},
+    ]
+  },
+  {
+    id:'materia_energia',
+    emoji:'⚗️',
+    title:'Materia y Energía',
+    subtitle:'Nutrición y fotosíntesis',
+    color:'#7b2d8b',colorLight:'#f0d6ff',colorMid:'#c77dff',
+    gradient:'linear-gradient(135deg,#7b2d8b,#9d4edd)',
+    xpColor:'#7b2d8b',
+    infographic:'EnergyInfograhic',
+    summary:`Los seres vivos necesitan constantemente **materia** (para construir y reparar sus estructuras) y **energía** (para realizar todas sus funciones vitales). La forma de obtener ambas cosas divide a los seres vivos en dos grandes grupos: autótrofos y heterótrofos.
+
+Los seres **autótrofos** (principalmente las plantas y las algas) fabrican su propio alimento a partir de sustancias inorgánicas simples. El proceso mediante el cual lo hacen se llama **fotosíntesis**, y es uno de los procesos bioquímicos más importantes de la biosfera. La fotosíntesis ocurre en los **cloroplastos** de las células vegetales, gracias al pigmento verde llamado **clorofila**. La ecuación resumida es: **6CO₂ + 6H₂O + energía luminosa → C₆H₁₂O₆ (glucosa) + 6O₂**. Es decir, la planta absorbe dióxido de carbono del aire y agua del suelo, y usando la energía del sol los transforma en glucosa (que utiliza como alimento) y libera oxígeno como subproducto. Todo el oxígeno que respiramos proviene de la fotosíntesis de plantas y algas. La fotosíntesis también es el punto de entrada de la energía solar en los ecosistemas.
+
+Los seres **heterótrofos** (animales, hongos, muchas bacterias) no pueden fabricar su propio alimento y deben obtener la materia orgánica comiendo a otros seres vivos. Una vez que tienen glucosa y otros nutrientes, todas las células (tanto autótrofas como heterótrofas) obtienen energía utilizable mediante la **respiración celular**, que ocurre en las **mitocondrias**. La ecuación es la inversa de la fotosíntesis: **C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP (energía)**. El ATP (adenosín trifosfato) es la "moneda energética" de la célula: la energía almacenada en el ATP se usa para mover músculos, fabricar proteínas, transportar sustancias y cualquier otra actividad celular.
+
+Los alimentos nos aportan los **nutrientes** que el cuerpo necesita. Los **hidratos de carbono** (pan, arroz, pasta, azúcar) son la principal fuente de energía rápida: se digieren y convierten en glucosa. Las **proteínas** (carne, pescado, huevos, legumbres) son los "ladrillos" del cuerpo: se usan para construir y reparar tejidos, fabricar enzimas, hormonas y anticuerpos. Las **grasas o lípidos** (aceite, mantequilla, frutos secos) almacenan energía a largo plazo, protegen órganos y forman las membranas celulares. Las **vitaminas** (frutas, verduras) son moléculas orgánicas que el cuerpo necesita en pequeñas cantidades para regular procesos metabólicos: su carencia causa enfermedades específicas (escorbuto por falta de vitamina C, raquitismo por falta de vitamina D). Los **minerales** (calcio, hierro, fósforo) son sustancias inorgánicas esenciales para el funcionamiento del organismo: el calcio forma los huesos, el hierro es esencial para los glóbulos rojos. El **agua** es el componente mayoritario de los seres vivos (60-70% del cuerpo humano): disuelve sustancias, transporta nutrientes y desechos, participa en reacciones químicas y regula la temperatura corporal.
+
+La **materia se recicla** en los ecosistemas a través de ciclos biogeoquímicos (el ciclo del carbono, del nitrógeno, del agua), mientras que la **energía no se recicla**: fluye en una sola dirección, del sol a los productores y de ahí a los consumidores, perdiéndose en forma de calor en cada nivel trófico.`,
+    keypoints:[
+      {icon:'🌞',label:'Fotosíntesis',desc:'6CO₂ + 6H₂O + luz → C₆H₁₂O₆ (glucosa) + 6O₂. Ocurre en los cloroplastos'},
+      {icon:'🌬️',label:'Respiración celular',desc:'Glucosa + O₂ → CO₂ + H₂O + ATP (energía). Ocurre en las mitocondrias'},
+      {icon:'🌡️',label:'Autótrofos vs Heterótrofos',desc:'Autótrofos fabrican su comida (plantas). Heterótrofos la obtienen de otros (animales)'},
+      {icon:'🥗',label:'Nutrientes',desc:'Hidratos de carbono (energía), proteínas (construcción), grasas (reserva), vitaminas y minerales'},
+      {icon:'💧',label:'El agua en los seres vivos',desc:'Componente mayoritario de la célula (70%). Disuelve sustancias, transporta y regula la temperatura'},
+      {icon:'♻️',label:'Ciclos de la materia',desc:'La materia se recicla en los ecosistemas: carbono, nitrógeno y agua forman ciclos cerrados'},
+    ],
+    questions:[
+      {q:'¿Cuál es la ecuación resumida de la fotosíntesis?',opts:['O₂ + glucosa → CO₂ + H₂O + energía','CO₂ + H₂O + luz → glucosa + O₂','Glucosa + O₂ → ATP + calor','Luz + O₂ → glucosa + CO₂'],ans:1,hint:'Las plantas "comen" CO₂ y agua, y con la luz fabrican glucosa (su comida) y liberan O₂ como residuo.',reward:'🌱'},
+      {q:'¿En qué orgánulo de la célula ocurre la fotosíntesis?',opts:['Mitocondria','Núcleo','Cloroplasto','Ribosoma'],ans:2,hint:'Es el orgánulo verde de las células vegetales que contiene clorofila.',reward:'💚'},
+      {q:'¿Qué gas producen las plantas durante la fotosíntesis que nosotros respiramos?',opts:['CO₂','Nitrógeno','Oxígeno (O₂)','Vapor de agua'],ans:2,hint:'Gracias a las plantas y algas, la atmósfera terrestre tiene el 21% de este gas vital.',reward:'💨'},
+      {q:'¿Cómo se llama el proceso por el que las células obtienen energía de la glucosa?',opts:['Fotosíntesis','Fermentación','Respiración celular','Digestión'],ans:2,hint:'Ocurre en las mitocondrias. Consume glucosa y O₂, y produce CO₂, agua y ATP (energía).',reward:'⚡'},
+      {q:'¿Qué nutriente es la principal fuente de energía rápida para el cuerpo?',opts:['Las grasas','Las proteínas','Las vitaminas','Los hidratos de carbono'],ans:3,hint:'El pan, el arroz y la pasta son ricos en este nutriente. Se digieren y convierten en glucosa.',reward:'🍞'},
+      {q:'¿Para qué sirven principalmente las proteínas en el cuerpo?',opts:['Dar energía inmediata','Construir y reparar tejidos (músculos, piel…)','Almacenar energía a largo plazo','Regular la temperatura corporal'],ans:1,hint:'La carne, el pescado, los huevos y las legumbres son ricas en ellas. Son los "ladrillos" del cuerpo.',reward:'💪'},
+      {q:'¿Qué porcentaje aproximado del cuerpo humano es agua?',opts:['20-30%','40-50%','60-70%','90-95%'],ans:2,hint:'Por eso necesitamos beber unos 2 litros al día. El agua es el componente mayoritario de nuestras células.',reward:'💧'},
+      {q:'¿Cuál es la diferencia entre un ser autótrofo y uno heterótrofo?',opts:['Los autótrofos se mueven y los heterótrofos no','Los autótrofos fabrican su comida y los heterótrofos la obtienen de otros','Los autótrofos son unicelulares y los heterótrofos pluricelulares','No hay diferencia real'],ans:1,hint:'"Auto" = propio, "hetero" = otro. Los primeros no dependen de nadie para comer.',reward:'🌿'},
+      {q:'¿Qué función tienen las vitaminas en el cuerpo?',opts:['Aportar energía principal','Construir músculos','Regular procesos vitales y el sistema inmune','Formar los huesos únicamente'],ans:2,hint:'Se necesitan en pequeñas cantidades pero son esenciales. Su deficiencia causa enfermedades como el escorbuto (falta de vitamina C).',reward:'🍊'},
+      {q:'¿Por qué se dice que el carbono forma un "ciclo" en los ecosistemas?',opts:['Porque es redondo','Porque las plantas lo absorben y los animales lo devuelven al respirar y morir','Porque solo existe en los seres vivos','Porque se crea y se destruye constantemente'],ans:1,hint:'La materia no se crea ni se destruye: el CO₂ del aire pasa a las plantas, a los animales, y vuelve al aire.',reward:'♻️'},
+    ]
+  },
+  {
+    id:'salud',
+    emoji:'🧬',
+    title:'Salud y Enfermedad',
+    subtitle:'Microorganismos, defensas y hábitos',
+    color:'#e76f51',colorLight:'#ffddd2',colorMid:'#f4a261',
+    gradient:'linear-gradient(135deg,#c05621,#e76f51)',
+    xpColor:'#e76f51',
+    infographic:'HealthInfograhic',
+    summary:`La **salud** es, según la definición de la Organización Mundial de la Salud (OMS, 1948), "un estado de completo bienestar físico, mental y social, y no solamente la ausencia de afecciones o enfermedades". Esta definición es importante porque reconoce que la salud va mucho más allá de no estar enfermo: implica también bienestar psicológico y una adecuada integración social.
+
+Cuando algo altera ese equilibrio, se produce una **enfermedad**. Las enfermedades se clasifican en dos grandes grupos. Las **enfermedades infecciosas** están causadas por microorganismos patógenos (agentes capaces de causar daño) que invaden nuestro organismo. Los principales tipos de patógenos son: las **bacterias** (seres vivos procariotas unicelulares; causan tuberculosis, salmonelosis, neumonía bacteriana; se tratan con antibióticos), los **virus** (no son seres vivos, no tienen células propias, necesitan infectar una célula huésped para reproducirse; causan gripe, COVID-19, varicela, sarampión; no responden a los antibióticos), los **hongos** (causan micosis como el pie de atleta o la candidiasis) y los **parásitos** (organismos que viven a expensas del huésped; la malaria, causada por el parásito Plasmodium transmitido por el mosquito Anopheles, es una de las enfermedades más mortales del mundo). Las **enfermedades no infecciosas** no se contagian: incluyen las enfermedades genéticas (alteraciones en el ADN), las crónicas (diabetes, hipertensión), los tumores (cáncer) y las carenciales (por déficit de nutrientes).
+
+Para defenderse de los patógenos, el cuerpo dispone del **sistema inmunitario**, un conjunto de células y moléculas especializadas. La primera barrera es la **inmunidad inespecífica**: la piel, las mucosas, la tos, el estornudo y la fiebre actúan como defensas físicas y químicas no selectivas. Si los patógenos superan esta barrera, entra en juego la **inmunidad específica**: los **linfocitos** (un tipo de glóbulo blanco) reconocen al patógeno y fabrican **anticuerpos**, proteínas con forma de "Y" que se unen específicamente al patógeno y lo neutralizan. Tras superar la enfermedad, el sistema inmune "recuerda" al patógeno y responde mucho más rápido si vuelve a infectarnos (memoria inmunológica).
+
+Las **vacunas** aprovechan este mecanismo: introducen en el organismo una forma inofensiva del patógeno (virus atenuado, virus muerto o fragmentos de sus proteínas) para que el sistema inmune lo "conozca" sin enfermar y fabrique anticuerpos y células de memoria. Así, si el patógeno real nos infecta en el futuro, las defensas ya están preparadas para eliminarlo rápidamente.
+
+Los **antibióticos** son medicamentos que matan bacterias o impiden su reproducción. Es fundamental usarlos correctamente (terminar siempre el tratamiento, nunca automedicarse) porque el uso incorrecto genera **resistencias bacterianas**: bacterias que sobreviven al antibiótico se reproducen y sus descendientes también son resistentes, lo que es un grave problema de salud pública mundial.
+
+La mejor medicina es la **prevención**: una dieta equilibrada y variada, ejercicio físico regular (al menos 60 minutos diarios de actividad moderada), descanso suficiente (8-10 horas en adolescentes), higiene personal (lavado de manos, higiene bucal), no fumar ni consumir alcohol o drogas, y vacunarse según el calendario vacunal. El tabaco es la primera causa de muerte evitable en el mundo, relacionado con más de 20 tipos de cáncer, enfermedades cardiovasculares y respiratorias crónicas.`,
+    keypoints:[
+      {icon:'🦠',label:'Bacterias',desc:'Seres vivos procariotas unicelulares. Algunas causan enfermedades (tuberculosis), otras son beneficiosas'},
+      {icon:'🔴',label:'Virus',desc:'No son seres vivos. Necesitan una célula huésped para reproducirse (gripe, COVID, varicela…)'},
+      {icon:'🛡️',label:'Sistema inmunitario',desc:'Glóbulos blancos (leucocitos) detectan y eliminan agentes extraños (patógenos)'},
+      {icon:'💉',label:'Vacunas',desc:'Introducen patógenos debilitados o sus fragmentos para "entrenar" las defensas sin enfermar'},
+      {icon:'💊',label:'Antibióticos',desc:'Medicamentos que matan bacterias. NO funcionan contra virus. Hay que usarlos bien para evitar resistencias'},
+      {icon:'❤️',label:'Hábitos saludables',desc:'Dieta equilibrada, ejercicio, descanso, higiene y no fumar son la mejor medicina preventiva'},
+    ],
+    questions:[
+      {q:'¿Cuál es la definición de salud según la OMS?',opts:['Ausencia de enfermedades','Estado de completo bienestar físico, mental y social','Tener buenas defensas','Llevar una dieta equilibrada'],ans:1,hint:'La OMS (Organización Mundial de la Salud) definió la salud en 1948. Va más allá de solo "no estar enfermo".',reward:'❤️'},
+      {q:'¿Qué tipo de microorganismo causa la gripe y el COVID?',opts:['Bacterias','Hongos','Parásitos','Virus'],ans:3,hint:'Son los más pequeños y simples. No tienen células propias y necesitan infectar a otros para reproducirse.',reward:'🔴'},
+      {q:'¿Para qué sirven los antibióticos?',opts:['Para matar virus','Para matar bacterias','Para curar cualquier infección','Para bajar la fiebre'],ans:1,hint:'Un resfriado común es causado por virus, y los antibióticos NO le harán nada. Son solo para bacterias.',reward:'💊'},
+      {q:'¿Qué células del sistema inmune defienden al cuerpo?',opts:['Glóbulos rojos','Plaquetas','Glóbulos blancos (leucocitos)','Neuronas'],ans:2,hint:'Los glóbulos rojos transportan O₂. Las plaquetas coagulan. Pero son los blancos los "soldados" del cuerpo.',reward:'🛡️'},
+      {q:'¿Cómo funcionan las vacunas?',opts:['Matan directamente al virus','Introducen el patógeno debilitado para que el sistema inmune lo "recuerde"','Son antibióticos en forma de inyección','Aumentan la temperatura corporal para matar gérmenes'],ans:1,hint:'Es como un simulacro de incendio: el cuerpo aprende a defenderse sin sufrir la enfermedad real.',reward:'💉'},
+      {q:'¿Cuál de estas enfermedades es NO infecciosa?',opts:['Tuberculosis (bacteria)','Malaria (parásito)','Diabetes tipo 1','Gripe (virus)'],ans:2,hint:'No te la puede "pegar" nadie. Es una enfermedad del sistema endocrino, no causada por un microorganismo.',reward:'🩺'},
+      {q:'¿Qué son los anticuerpos?',opts:['Células del sistema inmune','Proteínas fabricadas por el sistema inmune que reconocen patógenos específicos','Medicamentos antivirales','Vitaminas que refuerzan las defensas'],ans:1,hint:'Son como "llaves" que encajan perfectamente con cada patógeno. El sistema inmune los fabrica al detectar una amenaza.',reward:'🔑'},
+      {q:'¿Por qué es peligroso usar antibióticos de forma incorrecta?',opts:['Porque son muy caros','Porque pueden causar resistencias bacterianas','Porque atacan al sistema inmune','Porque son adictivos'],ans:1,hint:'Si las bacterias sobreviven a un antibiótico, sus descendientes serán resistentes. Esto ya es un problema mundial grave.',reward:'⚠️'},
+      {q:'¿Cuál es el vector (transmisor) de la malaria?',opts:['El agua contaminada','El mosquito Anopheles','El contacto con enfermos','Los alimentos en mal estado'],ans:1,hint:'Es un parásito (Plasmodium) que vive en los glóbulos rojos. Lo transmite la picadura de un insecto.',reward:'🦟'},
+      {q:'¿Qué hábito tiene MÁS impacto negativo en la salud según la ciencia?',opts:['No hacer ejercicio','Fumar tabaco','Dormir poco','Comer muchos dulces'],ans:1,hint:'Causa cáncer de pulmón, enfermedades cardiovasculares y más. Es la principal causa de muerte evitable en el mundo.',reward:'🚭'},
+    ]
+  }
+];
+
+/* ═══ SVG INFOGRAPHICS ═══ */
+
+function CellInfograhic(){
+  return(
+    <svg viewBox="0 0 400 320" style={{width:'100%',maxHeight:280}}>
+      {/* Cell membrane */}
+      <ellipse cx="200" cy="160" rx="175" ry="130" fill="#d8f3dc" stroke="#74c69d" strokeWidth="3" strokeDasharray="8,4" opacity="0.9"/>
+      {/* Nucleus */}
+      <ellipse cx="195" cy="155" rx="58" ry="48" fill="#b7e4c7" stroke="#40916c" strokeWidth="2.5"/>
+      <ellipse cx="185" cy="148" rx="22" ry="18" fill="#52b788" stroke="#2d6a4f" strokeWidth="2"/>
+      <text x="195" y="159" textAnchor="middle" fontSize="10" fontFamily="Nunito" fontWeight="800" fill="#1b4332">Núcleo</text>
+      {/* Mitochondria */}
+      <ellipse cx="90" cy="120" rx="28" ry="16" fill="#f4a261" stroke="#e76f51" strokeWidth="2"/>
+      <path d="M75,120 Q82,112 89,120 Q96,128 103,120" fill="none" stroke="#c05621" strokeWidth="1.5"/>
+      <text x="90" y="150" textAnchor="middle" fontSize="9" fontFamily="Nunito" fontWeight="700" fill="#7c2d12">Mito-</text>
+      <text x="90" y="161" textAnchor="middle" fontSize="9" fontFamily="Nunito" fontWeight="700" fill="#7c2d12">condria</text>
+      {/* Chloroplast */}
+      <ellipse cx="310" cy="115" rx="30" ry="17" fill="#95d5b2" stroke="#40916c" strokeWidth="2"/>
+      <line x1="282" y1="115" x2="340" y2="115" stroke="#2d6a4f" strokeWidth="1.5"/>
+      <line x1="288" y1="108" x2="333" y2="108" stroke="#2d6a4f" strokeWidth="1.5"/>
+      <line x1="288" y1="122" x2="333" y2="122" stroke="#2d6a4f" strokeWidth="1.5"/>
+      <text x="310" y="146" textAnchor="middle" fontSize="9" fontFamily="Nunito" fontWeight="700" fill="#1b4332">Cloro-</text>
+      <text x="310" y="157" textAnchor="middle" fontSize="9" fontFamily="Nunito" fontWeight="700" fill="#1b4332">plasto</text>
+      {/* Vacuole */}
+      <ellipse cx="300" cy="210" rx="35" ry="25" fill="#caf0f8" stroke="#90e0ef" strokeWidth="2"/>
+      <text x="300" y="215" textAnchor="middle" fontSize="9" fontFamily="Nunito" fontWeight="700" fill="#03045e">Vacuola</text>
+      {/* Ribosome dots */}
+      <circle cx="140" cy="190" r="5" fill="#c77dff" stroke="#7b2d8b" strokeWidth="1.5"/>
+      <circle cx="155" cy="200" r="5" fill="#c77dff" stroke="#7b2d8b" strokeWidth="1.5"/>
+      <circle cx="240" cy="200" r="5" fill="#c77dff" stroke="#7b2d8b" strokeWidth="1.5"/>
+      <circle cx="255" cy="188" r="5" fill="#c77dff" stroke="#7b2d8b" strokeWidth="1.5"/>
+      <text x="140" y="225" textAnchor="middle" fontSize="9" fontFamily="Nunito" fontWeight="700" fill="#7b2d8b">Ribosomas</text>
+      {/* Cell wall (plant) dashed outer */}
+      <ellipse cx="200" cy="160" rx="188" ry="142" fill="none" stroke="#40916c" strokeWidth="3" strokeDasharray="6,6" opacity="0.5"/>
+      {/* Labels */}
+      <text x="200" y="16" textAnchor="middle" fontSize="13" fontFamily="Nunito" fontWeight="900" fill="#1b4332">🔬 Célula Vegetal</text>
+      <text x="30" y="290" fontSize="9" fontFamily="Nunito" fill="#6b9e6b">— — — Membrana</text>
+      <text x="140" y="290" fontSize="9" fontFamily="Nunito" fill="#40916c">- - - Pared celular</text>
+    </svg>
+  );
+}
+
+function LivingInfograhic(){
+  return(
+    <svg viewBox="0 0 400 290" style={{width:'100%',maxHeight:260}}>
+      <text x="200" y="18" textAnchor="middle" fontSize="13" fontFamily="Nunito" fontWeight="900" fill="#0a4a4e">🌿 Los 5 Reinos</text>
+      {/* 5 kingdom circles */}
+      {[
+        {x:70,y:100,r:48,fill:'#caf0f8',stroke:'#0a9396',emoji:'🐾',label:'Animalia',sub:'Heterótrofos'},
+        {x:185,y:80,r:48,fill:'#d8f3dc',stroke:'#40916c',emoji:'🌲',label:'Plantae',sub:'Autótrofos'},
+        {x:300,y:100,r:48,fill:'#f0d6ff',stroke:'#7b2d8b',emoji:'🍄',label:'Fungi',sub:'Descomp.'},
+        {x:120,y:210,r:42,fill:'#fff8e6',stroke:'#e76f51',emoji:'🦠',label:'Protistas',sub:'Eucariotas'},
+        {x:265,y:210,r:42,fill:'#ffe0e6',stroke:'#e63946',emoji:'🧫',label:'Moneras',sub:'Procariotas'},
+      ].map((k,i)=>(
+        <g key={i}>
+          <circle cx={k.x} cy={k.y} r={k.r} fill={k.fill} stroke={k.stroke} strokeWidth="2.5"/>
+          <text x={k.x} y={k.y-14} textAnchor="middle" fontSize="20">{k.emoji}</text>
+          <text x={k.x} y={k.y+8} textAnchor="middle" fontSize="10" fontFamily="Nunito" fontWeight="800" fill="#1a2e1a">{k.label}</text>
+          <text x={k.x} y={k.y+22} textAnchor="middle" fontSize="8.5" fontFamily="Nunito" fill="#3d6b3d">{k.sub}</text>
+        </g>
+      ))}
+      {/* 3 vital functions banner */}
+      <rect x="30" y="262" width="340" height="24" rx="12" fill="#0a9396" opacity="0.9"/>
+      <text x="200" y="279" textAnchor="middle" fontSize="10" fontFamily="Nunito" fontWeight="800" fill="white">⚡ Nutrición · 👀 Relación · 👶 Reproducción</text>
+    </svg>
+  );
+}
+
+function EcoInfograhic(){
+  return(
+    <svg viewBox="0 0 400 300" style={{width:'100%',maxHeight:270}}>
+      <text x="200" y="18" textAnchor="middle" fontSize="13" fontFamily="Nunito" fontWeight="900" fill="#023e8a">🌍 Cadena Trófica</text>
+      {/* Sun */}
+      <circle cx="50" cy="70" r="28" fill="#ffd60a" stroke="#ffc300" strokeWidth="2"/>
+      <text x="50" y="74" textAnchor="middle" fontSize="20">☀️</text>
+      {/* Arrow sun → plant */}
+      <path d="M80,70 L115,70" stroke="#ffc300" strokeWidth="2.5" markerEnd="url(#arr)"/>
+      {/* Plant */}
+      <rect x="115" y="50" width="60" height="42" rx="12" fill="#d8f3dc" stroke="#40916c" strokeWidth="2"/>
+      <text x="145" y="68" textAnchor="middle" fontSize="18">🌿</text>
+      <text x="145" y="84" textAnchor="middle" fontSize="9" fontFamily="Nunito" fontWeight="800" fill="#1b4332">Productor</text>
+      {/* Arrow plant → rabbit */}
+      <path d="M177,70 L210,70" stroke="#40916c" strokeWidth="2.5" markerEnd="url(#arr)"/>
+      {/* Rabbit */}
+      <rect x="210" y="50" width="60" height="42" rx="12" fill="#fff8e6" stroke="#e76f51" strokeWidth="2"/>
+      <text x="240" y="68" textAnchor="middle" fontSize="18">🐰</text>
+      <text x="240" y="84" textAnchor="middle" fontSize="9" fontFamily="Nunito" fontWeight="800" fill="#7c2d12">Cons. 1°</text>
+      {/* Arrow rabbit → fox */}
+      <path d="M272,70 L305,70" stroke="#e76f51" strokeWidth="2.5" markerEnd="url(#arr)"/>
+      {/* Fox */}
+      <rect x="305" y="50" width="60" height="42" rx="12" fill="#ffddd2" stroke="#c05621" strokeWidth="2"/>
+      <text x="335" y="68" textAnchor="middle" fontSize="18">🦊</text>
+      <text x="335" y="84" textAnchor="middle" fontSize="9" fontFamily="Nunito" fontWeight="800" fill="#7c2d12">Cons. 2°</text>
+      {/* Eagle below fox */}
+      <path d="M335,95 L335,130" stroke="#c05621" strokeWidth="2.5" markerEnd="url(#arr)"/>
+      <rect x="305" y="130" width="60" height="42" rx="12" fill="#ffe0e6" stroke="#e63946" strokeWidth="2"/>
+      <text x="335" y="148" textAnchor="middle" fontSize="18">🦅</text>
+      <text x="335" y="164" textAnchor="middle" fontSize="9" fontFamily="Nunito" fontWeight="800" fill="#7c2d12">Cons. 3°</text>
+      {/* Decomposers */}
+      <rect x="100" y="195" width="180" height="50" rx="14" fill="#f0d6ff" stroke="#7b2d8b" strokeWidth="2"/>
+      <text x="190" y="218" textAnchor="middle" fontSize="14">🍂🍄🦠</text>
+      <text x="190" y="236" textAnchor="middle" fontSize="10" fontFamily="Nunito" fontWeight="800" fill="#3c1361">Descomponedores</text>
+      {/* Arrow from eagle to decomp */}
+      <path d="M320,175 Q240,195 210,205" fill="none" stroke="#7b2d8b" strokeWidth="1.5" strokeDasharray="5,3" markerEnd="url(#arr2)"/>
+      {/* Energy flow label */}
+      <text x="50" y="260" fontSize="9" fontFamily="Nunito" fontWeight="700" fill="#023e8a">Flujo de energía →</text>
+      <text x="50" y="275" fontSize="8.5" fontFamily="Nunito" fill="#1a6fb5">Se pierde ~90% en cada nivel trófico</text>
+      {/* Pyramid */}
+      <polygon points="310,290 370,290 340,250" fill="#1a6fb5" opacity="0.15" stroke="#1a6fb5" strokeWidth="1.5"/>
+      <text x="340" y="285" textAnchor="middle" fontSize="7.5" fontFamily="Nunito" fill="#023e8a">Pirámide</text>
+      {/* Arrow defs */}
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#40916c"/>
+        </marker>
+        <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#7b2d8b"/>
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+function BodyInfograhic(){
+  return(
+    <svg viewBox="0 0 400 300" style={{width:'100%',maxHeight:270}}>
+      <text x="200" y="18" textAnchor="middle" fontSize="13" fontFamily="Nunito" fontWeight="900" fill="#7f0000">🫀 Órganos Principales</text>
+      {/* Body silhouette */}
+      <ellipse cx="200" cy="60" rx="35" ry="42" fill="#fddcdc" stroke="#e63946" strokeWidth="2"/>
+      <rect x="162" y="98" width="76" height="110" rx="18" fill="#fddcdc" stroke="#e63946" strokeWidth="2"/>
+      <rect x="140" y="104" width="22" height="80" rx="11" fill="#fddcdc" stroke="#e63946" strokeWidth="1.5"/>
+      <rect x="238" y="104" width="22" height="80" rx="11" fill="#fddcdc" stroke="#e63946" strokeWidth="1.5"/>
+      <rect x="165" y="206" width="26" height="80" rx="13" fill="#fddcdc" stroke="#e63946" strokeWidth="1.5"/>
+      <rect x="209" y="206" width="26" height="80" rx="13" fill="#fddcdc" stroke="#e63946" strokeWidth="1.5"/>
+      {/* Brain */}
+      <ellipse cx="200" cy="52" rx="22" ry="18" fill="#f0d6ff" stroke="#7b2d8b" strokeWidth="2"/>
+      <text x="200" y="56" textAnchor="middle" fontSize="11">🧠</text>
+      {/* Heart */}
+      <circle cx="183" cy="132" r="14" fill="#ffb3c1" stroke="#e63946" strokeWidth="2"/>
+      <text x="183" y="137" textAnchor="middle" fontSize="13">🫀</text>
+      {/* Lungs */}
+      <ellipse cx="170" cy="118" rx="13" ry="18" fill="#caf0f8" stroke="#1a6fb5" strokeWidth="1.5" opacity="0.8"/>
+      <ellipse cx="220" cy="118" rx="13" ry="18" fill="#caf0f8" stroke="#1a6fb5" strokeWidth="1.5" opacity="0.8"/>
+      <text x="170" y="118" textAnchor="middle" fontSize="10">💨</text>
+      <text x="220" y="118" textAnchor="middle" fontSize="10">💨</text>
+      {/* Stomach */}
+      <ellipse cx="205" cy="160" rx="18" ry="14" fill="#d8f3dc" stroke="#40916c" strokeWidth="1.5"/>
+      <text x="205" y="164" textAnchor="middle" fontSize="10">🍽️</text>
+      {/* Kidneys */}
+      <ellipse cx="178" cy="185" rx="10" ry="15" fill="#fff8e6" stroke="#e76f51" strokeWidth="1.5"/>
+      <ellipse cx="222" cy="185" rx="10" ry="15" fill="#fff8e6" stroke="#e76f51" strokeWidth="1.5"/>
+      <text x="178" y="190" textAnchor="middle" fontSize="9">🫘</text>
+      <text x="222" y="190" textAnchor="middle" fontSize="9">🫘</text>
+      {/* Labels with lines */}
+      {[
+        {x:60,y:54,tx:178,ty:54,label:'Cerebro',color:'#7b2d8b'},
+        {x:60,y:118,tx:157,ty:118,label:'Pulmones',color:'#1a6fb5'},
+        {x:60,y:142,tx:169,ty:134,label:'Corazón',color:'#e63946'},
+        {x:310,y:160,tx:223,ty:160,label:'Estómago',color:'#40916c'},
+        {x:310,y:185,tx:232,ty:185,label:'Riñones',color:'#e76f51'},
+      ].map((l,i)=>(
+        <g key={i}>
+          <line x1={l.x+50} y1={l.y} x2={l.tx} y2={l.ty} stroke={l.color} strokeWidth="1.5" strokeDasharray="4,3" opacity="0.7"/>
+          <text x={l.x} y={l.y+4} textAnchor={l.x<200?'end':'start'} fontSize="10" fontFamily="Nunito" fontWeight="800" fill={l.color}>{l.label}</text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function EnergyInfograhic(){
+  return(
+    <svg viewBox="0 0 400 290" style={{width:'100%',maxHeight:260}}>
+      <text x="200" y="18" textAnchor="middle" fontSize="13" fontFamily="Nunito" fontWeight="900" fill="#4a0072">⚗️ Fotosíntesis vs Respiración</text>
+      {/* Photosynthesis box */}
+      <rect x="20" y="30" width="170" height="120" rx="16" fill="#d8f3dc" stroke="#40916c" strokeWidth="2.5"/>
+      <text x="105" y="50" textAnchor="middle" fontSize="11" fontFamily="Nunito" fontWeight="900" fill="#1b4332">☀️ FOTOSÍNTESIS</text>
+      <text x="105" y="68" textAnchor="middle" fontSize="9.5" fontFamily="Nunito" fill="#2d6a4f">Ocurre en: 🌿 Cloroplastos</text>
+      <rect x="30" y="75" width="150" height="28" rx="8" fill="white" opacity="0.7"/>
+      <text x="105" y="88" textAnchor="middle" fontSize="8.5" fontFamily="Nunito" fontWeight="700" fill="#1b4332">CO₂ + H₂O + 💡</text>
+      <text x="105" y="100" textAnchor="middle" fontSize="8.5" fontFamily="Nunito" fontWeight="700" fill="#1b4332">→ Glucosa + O₂</text>
+      <text x="105" y="120" textAnchor="middle" fontSize="9" fontFamily="Nunito" fill="#40916c">Entrada: CO₂, agua, luz</text>
+      <text x="105" y="136" textAnchor="middle" fontSize="9" fontFamily="Nunito" fill="#40916c">Salida: Glucosa, O₂ 🌬️</text>
+      {/* Respiration box */}
+      <rect x="210" y="30" width="170" height="120" rx="16" fill="#ffddd2" stroke="#e76f51" strokeWidth="2.5"/>
+      <text x="295" y="50" textAnchor="middle" fontSize="11" fontFamily="Nunito" fontWeight="900" fill="#7c2d12">⚡ RESPIRACIÓN</text>
+      <text x="295" y="68" textAnchor="middle" fontSize="9.5" fontFamily="Nunito" fill="#9d4221">Ocurre en: 🔶 Mitocondrias</text>
+      <rect x="220" y="75" width="150" height="28" rx="8" fill="white" opacity="0.7"/>
+      <text x="295" y="88" textAnchor="middle" fontSize="8.5" fontFamily="Nunito" fontWeight="700" fill="#7c2d12">Glucosa + O₂</text>
+      <text x="295" y="100" textAnchor="middle" fontSize="8.5" fontFamily="Nunito" fontWeight="700" fill="#7c2d12">→ CO₂ + H₂O + ATP⚡</text>
+      <text x="295" y="120" textAnchor="middle" fontSize="9" fontFamily="Nunito" fill="#e76f51">Entrada: Glucosa, O₂</text>
+      <text x="295" y="136" textAnchor="middle" fontSize="9" fontFamily="Nunito" fill="#e76f51">Salida: CO₂, H₂O, energía</text>
+      {/* Opposing arrows */}
+      <path d="M195,80 L205,80" stroke="#2d6a4f" strokeWidth="2.5" markerEnd="url(#a3)"/>
+      <path d="M205,100 L195,100" stroke="#e76f51" strokeWidth="2.5" markerEnd="url(#a4)"/>
+      {/* Nutrients */}
+      <rect x="20" y="165" width="360" height="110" rx="16" fill="rgba(255,255,255,0.7)" stroke="#c77dff" strokeWidth="2"/>
+      <text x="200" y="183" textAnchor="middle" fontSize="11" fontFamily="Nunito" fontWeight="900" fill="#4a0072">🥗 Nutrientes Esenciales</text>
+      {[
+        {x:55,icon:'🍞',name:'Hidratos',desc:'Energía'},
+        {x:130,icon:'🥩',name:'Proteínas',desc:'Construcción'},
+        {x:205,icon:'🥑',name:'Grasas',desc:'Reserva'},
+        {x:280,icon:'🍊',name:'Vitaminas',desc:'Regulación'},
+        {x:355,icon:'🦴',name:'Minerales',desc:'Estructura'},
+      ].map((n,i)=>(
+        <g key={i}>
+          <text x={n.x} y={210} textAnchor="middle" fontSize="18">{n.icon}</text>
+          <text x={n.x} y={228} textAnchor="middle" fontSize="8.5" fontFamily="Nunito" fontWeight="800" fill="#4a0072">{n.name}</text>
+          <text x={n.x} y={242} textAnchor="middle" fontSize="8" fontFamily="Nunito" fill="#7b2d8b">{n.desc}</text>
+        </g>
+      ))}
+      <defs>
+        <marker id="a3" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#2d6a4f"/></marker>
+        <marker id="a4" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#e76f51"/></marker>
+      </defs>
+    </svg>
+  );
+}
+
+function HealthInfograhic(){
+  return(
+    <svg viewBox="0 0 400 295" style={{width:'100%',maxHeight:265}}>
+      <text x="200" y="18" textAnchor="middle" fontSize="13" fontFamily="Nunito" fontWeight="900" fill="#7c2d12">🧬 Defensa del Organismo</text>
+      {/* Pathogen types */}
+      {[
+        {x:55,y:75,fill:'#ffddd2',stroke:'#c05621',emoji:'🦠',label:'Bacteria',sub:'Ser vivo'},
+        {x:145,y:75,fill:'#ffe0e6',stroke:'#e63946',emoji:'🔴',label:'Virus',sub:'No vivo'},
+        {x:235,y:75,fill:'#f0d6ff',stroke:'#7b2d8b',emoji:'🍄',label:'Hongo',sub:'Ser vivo'},
+        {x:325,y:75,fill:'#fff8e6',stroke:'#e76f51',emoji:'🪱',label:'Parásito',sub:'Ser vivo'},
+      ].map((p,i)=>(
+        <g key={i}>
+          <circle cx={p.x} cy={p.y} r="36" fill={p.fill} stroke={p.stroke} strokeWidth="2.5"/>
+          <text x={p.x} y={p.y+5} textAnchor="middle" fontSize="20">{p.emoji}</text>
+          <text x={p.x} y={p.y+22} textAnchor="middle" fontSize="9.5" fontFamily="Nunito" fontWeight="800" fill="#1a2e1a">{p.label}</text>
+          <text x={p.x} y={p.y+35} textAnchor="middle" fontSize="8" fontFamily="Nunito" fill="#6b9e6b">{p.sub}</text>
+        </g>
+      ))}
+      {/* VS arrows pointing down to immune */}
+      <path d="M55,115 Q200,145 200,160" fill="none" stroke="#e63946" strokeWidth="1.5" strokeDasharray="5,3"/>
+      <path d="M325,115 Q200,145 200,160" fill="none" stroke="#e63946" strokeWidth="1.5" strokeDasharray="5,3"/>
+      {/* Immune system */}
+      <rect x="80" y="160" width="240" height="55" rx="16" fill="#d8f3dc" stroke="#40916c" strokeWidth="2.5"/>
+      <text x="200" y="180" textAnchor="middle" fontSize="11" fontFamily="Nunito" fontWeight="900" fill="#1b4332">🛡️ Sistema Inmunitario</text>
+      <text x="200" y="198" textAnchor="middle" fontSize="9.5" fontFamily="Nunito" fill="#2d6a4f">Leucocitos · Anticuerpos · Fiebre</text>
+      <text x="200" y="210" textAnchor="middle" fontSize="9" fontFamily="Nunito" fill="#40916c">Detectan y eliminan patógenos</text>
+      {/* Vaccine + antibiotics */}
+      <rect x="30" y="232" width="155" height="50" rx="12" fill="#caf0f8" stroke="#1a6fb5" strokeWidth="2"/>
+      <text x="107" y="251" textAnchor="middle" fontSize="10" fontFamily="Nunito" fontWeight="900" fill="#023e8a">💉 Vacuna</text>
+      <text x="107" y="266" textAnchor="middle" fontSize="8.5" fontFamily="Nunito" fill="#1a6fb5">Previene enfermedades</text>
+      <text x="107" y="278" textAnchor="middle" fontSize="8.5" fontFamily="Nunito" fill="#1a6fb5">entrenando las defensas</text>
+      <rect x="215" y="232" width="155" height="50" rx="12" fill="#fff8e6" stroke="#e76f51" strokeWidth="2"/>
+      <text x="292" y="251" textAnchor="middle" fontSize="10" fontFamily="Nunito" fontWeight="900" fill="#7c2d12">💊 Antibiótico</text>
+      <text x="292" y="266" textAnchor="middle" fontSize="8.5" fontFamily="Nunito" fill="#9d4221">Solo contra bacterias</text>
+      <text x="292" y="278" textAnchor="middle" fontSize="8.5" fontFamily="Nunito" fill="#9d4221">¡NO contra virus!</text>
+    </svg>
+  );
+}
+
+const INFOGRAPHICS={CellInfograhic,LivingInfograhic,EcoInfograhic,BodyInfograhic,EnergyInfograhic,HealthInfograhic};
+
+/* ═══ REWARD SYSTEM ═══ */
+const RANKS=[
+  {min:0,label:'🥚 Huevo',xp:0},
+  {min:50,label:'🐛 Oruga',xp:50},
+  {min:150,label:'🦋 Mariposa',xp:150},
+  {min:300,label:'🌱 Brote',xp:300},
+  {min:500,label:'🌿 Planta',xp:500},
+  {min:750,label:'🌳 Árbol',xp:750},
+  {min:1000,label:'🦁 Biólogo Jr',xp:1000},
+];
+function getRank(xp){return RANKS.reduce((a,r)=>xp>=r.min?r:a,RANKS[0])}
+
+/* ═══ CONFETTI ═══ */
+function Confetti({active}){
+  if(!active)return null;
+  const colors=['#74c69d','#ffd60a','#c77dff','#ff8fa3','#90e0ef','#f4a261'];
+  return(
+    <div style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:1000}}>
+      {Array.from({length:30},(_,i)=>(
+        <div key={i} style={{
+          position:'absolute',top:'-20px',
+          left:`${Math.random()*100}%`,
+          width:i%3===0?10:7,height:i%3===0?10:7,
+          borderRadius:i%2===0?'50%':2,
+          background:colors[i%colors.length],
+          animation:`confetti-drop ${.8+Math.random()*.8}s ease-out ${i*.04}s forwards`,
+        }}/>
+      ))}
+    </div>
+  );
+}
+
+/* ═══ XP FLOAT ═══ */
+function XPFloat({xp,active}){
+  if(!active)return null;
+  return(
+    <div style={{
+      position:'fixed',top:'40%',left:'50%',transform:'translateX(-50%)',
+      fontSize:28,fontWeight:900,fontFamily:'Nunito',
+      color:'#ffd60a',textShadow:'0 2px 8px rgba(0,0,0,0.3)',
+      animation:'xp-float 1.2s ease-out forwards',
+      pointerEvents:'none',zIndex:1001,
+    }}>+{xp} XP ⭐</div>
+  );
+}
+
+/* ═══ QUIZ CARD ═══
+   Logic: user selects an option → clicks Comprobar → answer is locked (correct OR wrong)
+   → feedback shown immediately → Siguiente button appears → parent advances index.
+   One attempt only. Correct/wrong both recorded. No retries.
+═══ */
+function QuizCard({question,qIndex,total,onAnswer,isAnswered,wasCorrect,chosenIndex,topicColor,onNext,isLast}){
+  const [selected,setSelected]=useState(null);
+  const [showHint,setShowHint]=useState(false);
+  const [checked,setChecked]=useState(isAnswered);
+
+  // When navigating back to an already-answered question, pre-show the locked state
+  useEffect(()=>{
+    setSelected(isAnswered ? chosenIndex : null);
+    setChecked(isAnswered);
+    setShowHint(false);
+  },[qIndex]);
+
+  const commit=useCallback(()=>{
+    if(selected===null||checked)return;
+    setChecked(true);
+    const ok=selected===question.ans;
+    onAnswer(ok, selected); // pass both result and which option was chosen
+  },[selected,checked,question,onAnswer]);
+
+  const letters=['A','B','C','D'];
+  const locked=checked; // after committing, all buttons are disabled
+
+  return(
+    <div style={{animation:'fadeUp .4s ease both'}}>
+      {/* Progress bar */}
+      <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:18}}>
+        <div style={{flex:1,height:6,background:'rgba(0,0,0,0.08)',borderRadius:100,overflow:'hidden'}}>
+          <div style={{height:'100%',width:`${(qIndex/total)*100}%`,background:`linear-gradient(90deg,${topicColor},${topicColor}88)`,borderRadius:100,transition:'width .5s'}}/>
+        </div>
+        <span style={{fontSize:12,fontWeight:800,color:topicColor}}>{qIndex+1}/{total}</span>
+      </div>
+
+      <h3 style={{fontSize:'clamp(15px,2.2vw,18px)',fontWeight:800,lineHeight:1.4,marginBottom:18,color:'#1a2e1a'}}>{question.q}</h3>
+
+      {/* Options */}
+      <div style={{display:'flex',flexDirection:'column',gap:10,marginBottom:18}}>
+        {question.opts.map((opt,i)=>{
+          let cls='btn-opt';
+          if(locked){
+            if(i===question.ans) cls+=' reveal';                        // always green = correct answer
+            else if(i===selected&&i!==question.ans) cls+=' wrong';     // red = what user chose wrong
+          } else {
+            if(selected===i) cls+=' correct'; // just highlight selected (no feedback yet)
+          }
+          return(
+            <button key={i} className={cls}
+              disabled={locked}
+              onClick={()=>{ if(!locked) setSelected(i); }}>
+              <span style={{
+                width:28,height:28,borderRadius:'50%',flexShrink:0,
+                background: locked
+                  ? (i===question.ans ? '#40916c' : i===selected ? '#e63946' : 'rgba(0,0,0,0.06)')
+                  : (selected===i ? topicColor : 'rgba(0,0,0,0.06)'),
+                color: locked
+                  ? (i===question.ans||i===selected ? 'white' : '#6b9e6b')
+                  : (selected===i ? 'white' : '#6b9e6b'),
+                display:'flex',alignItems:'center',justifyContent:'center',
+                fontSize:11,fontWeight:800,transition:'all .2s',
+              }}>{letters[i]}</span>
+              <span style={{fontSize:14,fontWeight:600}}>{opt}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Feedback banner — shown after committing */}
+      {locked&&(
+        <div style={{
+          display:'flex',alignItems:'center',gap:10,
+          background: wasCorrect ? '#d8f3dc' : '#ffe0e6',
+          border:`2px solid ${wasCorrect?'#74c69d':'#ff8fa3'}`,
+          borderRadius:'var(--r)',padding:'13px 16px',marginBottom:16,
+          animation:'pop .4s cubic-bezier(.34,1.56,.64,1)',
+          fontSize:14,fontWeight:700,
+          color: wasCorrect ? '#1b4332' : '#7f0000',
+        }}>
+          <span style={{fontSize:22}}>{wasCorrect ? question.reward : '😅'}</span>
+          <div>
+            <div>{wasCorrect ? '¡Correcto! +10 XP 🎉' : '¡Fallaste esta vez!'}</div>
+            {!wasCorrect&&(
+              <div style={{fontSize:12,fontWeight:600,marginTop:2,color:'#9b2335'}}>
+                Respuesta correcta: <strong>{question.opts[question.ans]}</strong>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Action row */}
+      <div style={{display:'flex',gap:10,flexWrap:'wrap',alignItems:'center'}}>
+        {!locked&&(
+          <button onClick={commit} disabled={selected===null}
+            style={{
+              fontFamily:'var(--font)',cursor:selected===null?'default':'pointer',
+              background:topicColor,color:'white',fontSize:15,fontWeight:800,
+              padding:'12px 26px',borderRadius:50,border:'none',
+              opacity:selected===null?.4:1,
+              boxShadow:`0 4px 16px ${topicColor}44`,
+              transition:'all .15s',
+            }}>
+            Comprobar ✓
+          </button>
+        )}
+        {locked&&(
+          <button onClick={onNext}
+            style={{
+              fontFamily:'var(--font)',cursor:'pointer',
+              background: wasCorrect ? topicColor : '#e63946',
+              color:'white',fontSize:15,fontWeight:800,
+              padding:'12px 26px',borderRadius:50,border:'none',
+              boxShadow:`0 4px 16px rgba(0,0,0,0.2)`,
+              transition:'all .15s',
+              animation:'pop .35s cubic-bezier(.34,1.56,.64,1)',
+            }}>
+            {isLast ? '🏆 Ver resultados' : 'Siguiente →'}
+          </button>
+        )}
+        <button className="btn-hint" onClick={()=>setShowHint(h=>!h)}>
+          {showHint?'Ocultar pista':'💡 Pista'}
+        </button>
+      </div>
+
+      {showHint&&(
+        <div style={{background:'#fff8e6',border:'2px solid rgba(231,176,0,0.3)',borderRadius:'var(--r)',padding:'13px 16px',marginTop:12,fontSize:13,fontWeight:600,color:'#5c3500',lineHeight:1.6,animation:'fadeUp .3s ease'}}>
+          💡 {question.hint}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══ TOPIC VIEW ═══ */
+function TopicView({topic,progress,onBack,onQuizDone,xp,addXp}){
+  const [mode,setMode]=useState('learn');
+  const [qIndex,setQIndex]=useState(0);
+  // answers[i] = { ok: bool, chosen: number }
+  const [answers,setAnswers]=useState({});
+  const [showConfetti,setShowConfetti]=useState(false);
+  const [showXP,setShowXP]=useState(false);
+  const [quizDone,setQuizDone]=useState(false);
+
+  const InfoComp=INFOGRAPHICS[topic.infographic];
+  const answered=Object.keys(answers).length;
+  const correct=Object.values(answers).filter(a=>a&&a.ok).length;
+  const total=topic.questions.length;
+
+  // Called by QuizCard when user commits an answer — lock it, give XP if correct
+  const handleAnswer=useCallback((ok, chosen)=>{
+    if(qIndex in answers) return; // already answered, ignore
+    setAnswers(a=>({...a,[qIndex]:{ok,chosen}}));
+    if(ok){
+      setShowConfetti(true);setShowXP(true);addXp(10);
+      setTimeout(()=>{setShowConfetti(false);setShowXP(false)},1500);
+    }
+  },[qIndex,answers,addXp]);
+
+  // Called by the Siguiente/Ver resultados button inside QuizCard
+  const handleNext=useCallback(()=>{
+    if(qIndex<total-1){
+      setQIndex(q=>q+1);
+    } else {
+      // Use functional updater to get latest answers for final tally
+      setAnswers(currentAnswers=>{
+        const finalCorrect=Object.values(currentAnswers).filter(a=>a&&a.ok).length;
+        onQuizDone(topic.id, finalCorrect);
+        return currentAnswers;
+      });
+      setQuizDone(true);
+    }
+  },[qIndex,total,topic.id,onQuizDone]);
+
+  return(
+    <div style={{position:'relative',zIndex:1,maxWidth:720,margin:'0 auto',padding:'0 16px 40px'}}>
+      <Confetti active={showConfetti}/>
+      <XPFloat xp={10} active={showXP}/>
+
+      {/* Back + topic header */}
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16,paddingTop:16}}>
+        <button className="btn-soft" style={{padding:'8px 16px',fontSize:13}} onClick={onBack}>← Temas</button>
+        <div style={{display:'inline-flex',alignItems:'center',gap:8,background:topic.colorLight,borderRadius:50,padding:'6px 16px',border:`2px solid ${topic.color}33`,fontSize:13,fontWeight:800,color:topic.color}}>
+          <span>{topic.emoji}</span><span>{topic.title}</span>
+        </div>
+      </div>
+
+      {/* Mode tabs */}
+      <div style={{display:'flex',gap:8,marginBottom:20}}>
+        {[
+          {id:'learn',label:'📖 Estudiar'},
+          {id:'quiz',label:'🧠 Quiz'},
+        ].map(m=>(
+          <button key={m.id} onClick={()=>{setMode(m.id);setQuizDone(false)}}
+            style={{
+              padding:'10px 22px',borderRadius:50,fontSize:14,fontWeight:800,
+              background:mode===m.id?topic.color:'rgba(0,0,0,0.06)',
+              color:mode===m.id?'white':topic.color,
+              border:`2px solid ${mode===m.id?'transparent':topic.color+'33'}`,
+              boxShadow:mode===m.id?`0 4px 14px ${topic.color}44`:'none',
+            }}>
+            {m.label}
+          </button>
+        ))}
+        <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:8}}>
+          <span style={{fontSize:13,fontWeight:700,color:topic.color}}>{answered}/{total} respondidas</span>
+        </div>
+      </div>
+
+      {/* ── LEARN MODE ── */}
+      {mode==='learn'&&(
+        <div style={{animation:'fadeUp .4s ease'}}>
+          {/* Infographic card */}
+          <div className="card" style={{padding:24,marginBottom:20}}>
+            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
+              <div style={{width:36,height:36,borderRadius:10,background:topic.gradient,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>{topic.emoji}</div>
+              <div>
+                <h2 style={{fontFamily:'var(--serif)',fontSize:22,color:'#1a2e1a',fontStyle:'italic'}}>{topic.title}</h2>
+                <p style={{fontSize:13,color:'#6b9e6b',fontWeight:600}}>{topic.subtitle}</p>
+              </div>
+            </div>
+            <InfoComp/>
+          </div>
+
+          {/* Summary */}
+          <div className="card" style={{padding:24,marginBottom:16}}>
+            <h3 style={{fontSize:16,fontWeight:900,color:topic.color,marginBottom:12}}>📝 Resumen</h3>
+            <p style={{fontSize:14,lineHeight:1.8,color:'#3d6b3d'}}>
+              {topic.summary.split('**').map((part,i)=>
+                i%2===1?<strong key={i} style={{color:topic.color}}>{part}</strong>:<span key={i}>{part}</span>
+              )}
+            </p>
+          </div>
+
+          {/* Key points */}
+          <div className="card" style={{padding:24}}>
+            <h3 style={{fontSize:16,fontWeight:900,color:topic.color,marginBottom:14}}>🔑 Conceptos clave</h3>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:12}}>
+              {topic.keypoints.map((kp,i)=>(
+                <div key={i} className="info-cell" style={{borderColor:topic.color+'22'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}>
+                    <span style={{fontSize:20}}>{kp.icon}</span>
+                    <span style={{fontSize:13,fontWeight:800,color:topic.color}}>{kp.label}</span>
+                  </div>
+                  <p style={{fontSize:12,color:'#3d6b3d',lineHeight:1.6}}>{kp.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button className="btn-main" style={{width:'100%',marginTop:16,fontSize:16,padding:'16px',background:topic.gradient,boxShadow:`0 6px 20px ${topic.color}44`}}
+            onClick={()=>setMode('quiz')}>
+            ¡Empezar el Quiz! 🧠 →
+          </button>
+        </div>
+      )}
+
+      {/* ── QUIZ MODE ── */}
+      {mode==='quiz'&&!quizDone&&(
+        <div>
+          {/* Q navigator dots */}
+          <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:18}}>
+            {topic.questions.map((_,i)=>{
+              const ans=answers[i];
+              return(
+                <button key={i} className="nav-dot"
+                  onClick={()=>{ if(ans) setQIndex(i); }} // only jump to answered ones
+                  style={{
+                    width:i===qIndex?24:9,height:9,
+                    background:i===qIndex
+                      ? topic.color
+                      : ans
+                        ? (ans.ok ? '#74c69d' : '#ff8fa3')
+                        : 'rgba(0,0,0,0.15)',
+                    cursor: ans||i===qIndex ? 'pointer' : 'default',
+                  }}/>
+              );
+            })}
+          </div>
+
+          <div className="card" style={{padding:'clamp(18px,4vw,32px)'}}>
+            <QuizCard
+              key={qIndex}
+              question={topic.questions[qIndex]}
+              qIndex={qIndex}
+              total={total}
+              onAnswer={handleAnswer}
+              isAnswered={qIndex in answers}
+              wasCorrect={answers[qIndex]?.ok}
+              chosenIndex={answers[qIndex]?.chosen ?? null}
+              topicColor={topic.color}
+              onNext={handleNext}
+              isLast={qIndex===total-1}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── QUIZ RESULTS ── */}
+      {mode==='quiz'&&quizDone&&(
+        <div className="card" style={{padding:32,textAlign:'center',animation:'pop .5s cubic-bezier(.34,1.56,.64,1)'}}>
+          <div style={{fontSize:64,marginBottom:10}}>
+            {correct>=9?'🏆':correct>=7?'🥇':correct>=5?'🥈':correct>=3?'🥉':'📚'}
+          </div>
+          <h2 style={{fontFamily:'var(--serif)',fontSize:26,marginBottom:6,fontStyle:'italic'}}>
+            {correct>=9?'¡Increíble!':correct>=7?'¡Muy bien!':correct>=5?'¡Buen trabajo!':correct>=3?'¡Sigue practicando!':'¡A repasar el tema!'}
+          </h2>
+          <p style={{fontSize:16,color:'#3d6b3d',marginBottom:6}}>
+            Has acertado <strong style={{color:topic.color,fontSize:22}}>{correct}</strong> de <strong>{total}</strong> preguntas
+          </p>
+          <p style={{fontSize:14,color:'#999',marginBottom:24}}>
+            ✅ {correct} correctas &nbsp;·&nbsp; ❌ {total-correct} falladas
+          </p>
+
+          {/* Per-question result grid */}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:8,marginBottom:24}}>
+            {topic.questions.map((_,i)=>{
+              const ans=answers[i];
+              const ok=ans?.ok;
+              return(
+                <button key={i}
+                  onClick={()=>{setQuizDone(false);setQIndex(i)}}
+                  title={topic.questions[i].q}
+                  style={{
+                    aspectRatio:'1',borderRadius:10,
+                    background:ok?'#d8f3dc':'#ffe0e6',
+                    border:`2px solid ${ok?'#74c69d':'#ff8fa3'}`,
+                    display:'flex',alignItems:'center',justifyContent:'center',
+                    fontSize:18,cursor:'pointer',transition:'transform .15s',
+                    fontFamily:'var(--font)',
+                  }}
+                  onMouseEnter={e=>e.currentTarget.style.transform='scale(1.1)'}
+                  onMouseLeave={e=>e.currentTarget.style.transform=''}>
+                  {ok?'✅':'❌'}
+                </button>
+              );
+            })}
+          </div>
+          <p style={{fontSize:12,color:'#aaa',marginBottom:20}}>Pulsa cualquier pregunta para revisarla</p>
+
+          <div style={{display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap'}}>
+            <button className="btn-soft"
+              onClick={()=>{setAnswers({});setQIndex(0);setQuizDone(false)}}>
+              🔄 Repetir quiz
+            </button>
+            <button style={{
+              fontFamily:'var(--font)',cursor:'pointer',border:'none',
+              background:topic.gradient,color:'white',fontSize:15,fontWeight:800,
+              padding:'13px 26px',borderRadius:50,
+              boxShadow:`0 4px 14px ${topic.color}44`,
+            }} onClick={onBack}>
+              🏠 Volver a temas
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══ HOME SCREEN ═══ */
+function HomeScreen({onSelect,progress,xp,totalCorrect}){
+  const rank=getRank(xp);
+  const nextRank=RANKS.find(r=>r.min>xp)||RANKS[RANKS.length-1];
+  const pct=nextRank.min>rank.min?Math.min(100,((xp-rank.min)/(nextRank.min-rank.min))*100):100;
+  const totalDone=Object.values(progress).reduce((a,b)=>a+b,0);
+
+  return(
+    <div style={{position:'relative',zIndex:1,maxWidth:800,margin:'0 auto',padding:'0 16px 48px'}}>
+      {/* Header */}
+      <div style={{textAlign:'center',paddingTop:32,paddingBottom:20}}>
+        <div style={{fontSize:52,marginBottom:8,animation:'float 3s ease-in-out infinite'}}>🧬</div>
+        <h1 style={{fontFamily:'var(--serif)',fontSize:'clamp(28px,5vw,42px)',fontWeight:700,fontStyle:'italic',color:'#1a2e1a',marginBottom:4,letterSpacing:'-.5px'}}>
+          BioFlow
+        </h1>
+        <p style={{fontSize:15,color:'#6b9e6b',fontWeight:600,marginBottom:0}}>Biología 1º ESO · Juan Collado</p>
+      </div>
+
+      {/* XP / Rank card */}
+      <div className="card" style={{padding:20,marginBottom:20,display:'flex',alignItems:'center',gap:16}}>
+        <div style={{width:56,height:56,borderRadius:16,background:'linear-gradient(135deg,#2d6a4f,#74c69d)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:26,flexShrink:0}}>
+          {rank.label.split(' ')[0]}
+        </div>
+        <div style={{flex:1}}>
+          <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+            <span style={{fontSize:14,fontWeight:900,color:'#1a2e1a'}}>{rank.label}</span>
+            <span style={{fontSize:13,fontWeight:700,color:'#40916c'}}>{xp} XP</span>
+          </div>
+          <div className="xp-bar">
+            <div className="xp-fill" style={{width:`${pct}%`}}/>
+          </div>
+          <div style={{display:'flex',justifyContent:'space-between',marginTop:4}}>
+            <span style={{fontSize:11,color:'#6b9e6b'}}>Siguiente: {nextRank.label}</span>
+            <span style={{fontSize:11,color:'#6b9e6b'}}>{totalCorrect} respuestas correctas</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Overall progress */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10,marginBottom:24}}>
+        {[
+          {icon:'📚',val:totalDone,label:'Preguntas respondidas',color:'#2d6a4f'},
+          {icon:'✅',val:totalCorrect,label:'Respuestas correctas',color:'#0a9396'},
+          {icon:'⭐',val:xp,label:'XP ganados',color:'#e76f51'},
+        ].map((s,i)=>(
+          <div key={i} className="card" style={{padding:14,textAlign:'center'}}>
+            <div style={{fontSize:22,marginBottom:4}}>{s.icon}</div>
+            <div style={{fontSize:20,fontWeight:900,color:s.color}}>{s.val}</div>
+            <div style={{fontSize:11,color:'#6b9e6b',fontWeight:600,lineHeight:1.3}}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Topic cards grid */}
+      <h2 style={{fontFamily:'var(--serif)',fontSize:20,fontStyle:'italic',color:'#1a2e1a',marginBottom:14}}>Elige un tema para estudiar:</h2>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:14}}>
+        {TOPICS.map((t,i)=>{
+          const done=progress[t.id]||0;
+          const total=t.questions.length;
+          const pct=(done/total)*100;
+          return(
+            <button key={t.id} onClick={()=>onSelect(t.id)}
+              style={{
+                background:'rgba(255,255,255,0.88)',
+                backdropFilter:'blur(16px)',
+                border:'2px solid rgba(255,255,255,0.9)',
+                borderRadius:'var(--r-xl)',
+                padding:20,textAlign:'left',cursor:'pointer',
+                boxShadow:'var(--sh)',
+                transition:'all .2s',
+                animation:`fadeUp .5s ${i*.07}s ease both`,
+              }}
+              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-4px)';e.currentTarget.style.boxShadow='var(--sh-lg)';e.currentTarget.style.borderColor=t.color+'44'}}
+              onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow='var(--sh)';e.currentTarget.style.borderColor='rgba(255,255,255,0.9)'}}>
+              {/* Emoji */}
+              <div style={{width:48,height:48,borderRadius:14,background:t.gradient,display:'flex',alignItems:'center',justifyContent:'center',fontSize:26,marginBottom:12,boxShadow:`0 4px 12px ${t.color}33`}}>
+                {t.emoji}
+              </div>
+              {/* Title */}
+              <h3 style={{fontFamily:'var(--serif)',fontSize:17,fontStyle:'italic',fontWeight:700,color:'#1a2e1a',marginBottom:3}}>{t.title}</h3>
+              <p style={{fontSize:12,color:t.color,fontWeight:700,marginBottom:12}}>{t.subtitle}</p>
+              {/* Progress bar */}
+              <div style={{height:6,background:'rgba(0,0,0,0.07)',borderRadius:100,overflow:'hidden',marginBottom:6}}>
+                <div style={{height:'100%',width:`${pct}%`,background:t.gradient,borderRadius:100,transition:'width .6s'}}/>
+              </div>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <span style={{fontSize:11,color:'#6b9e6b',fontWeight:700}}>{done}/{total} preguntas</span>
+                {done===total&&<span style={{background:t.colorLight,color:t.color,fontSize:11,fontWeight:800,padding:'2px 8px',borderRadius:50}}>✅ Completo</span>}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Achievement badges */}
+      {xp>=50&&(
+        <div className="card" style={{padding:20,marginTop:20}}>
+          <h3 style={{fontSize:14,fontWeight:900,color:'#1a2e1a',marginBottom:12}}>🏅 Logros desbloqueados</h3>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+            {xp>=50&&<span className="badge" style={{background:'#d8f3dc',color:'#2d6a4f'}}>🌱 Primer acierto</span>}
+            {xp>=100&&<span className="badge" style={{background:'#caf0f8',color:'#0a9396'}}>🔬 Científico noval</span>}
+            {xp>=300&&<span className="badge" style={{background:'#f0d6ff',color:'#7b2d8b'}}>🧬 Biólogo en prácticas</span>}
+            {xp>=600&&<span className="badge" style={{background:'#ffddd2',color:'#c05621'}}>🦁 Naturalista</span>}
+            {totalCorrect>=30&&<span className="badge" style={{background:'#fff8e6',color:'#8b6000'}}>⭐ 30 respuestas correctas</span>}
+            {Object.values(progress).filter(v=>v>=8).length>=3&&<span className="badge" style={{background:'#ffe0e6',color:'#c0392b'}}>🏆 Experto en 3 temas</span>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══ APP ═══ */
+function App(){
+  const [view,setView]=useState('home');
+  const [activeTopic,setActiveTopic]=useState(null);
+  const [progress,setProgress]=useState(()=>{const s=sessionStorage.getItem('bio_prog');return s?JSON.parse(s):{}});
+  const [xp,setXP]=useState(()=>parseInt(sessionStorage.getItem('bio_xp')||'0'));
+  const [totalCorrect,setTotalCorrect]=useState(()=>parseInt(sessionStorage.getItem('bio_tc')||'0'));
+
+  useEffect(()=>{sessionStorage.setItem('bio_prog',JSON.stringify(progress))},[progress]);
+  useEffect(()=>{sessionStorage.setItem('bio_xp',xp)},[xp]);
+  useEffect(()=>{sessionStorage.setItem('bio_tc',totalCorrect)},[totalCorrect]);
+
+  const addXp=useCallback((n)=>{setXP(x=>x+n);setTotalCorrect(t=>t+1)},[]);
+
+  const handleQuizDone=useCallback((topicId,correct)=>{
+    setProgress(p=>({...p,[topicId]:Math.max(p[topicId]||0,correct)}));
+  },[]);
+
+  const topic=TOPICS.find(t=>t.id===activeTopic);
+
+  return(
+    <div style={{minHeight:'100vh',overflowY:'auto',overflowX:'hidden'}}>
+      <div className="nature-bg"/>
+      {view==='home'&&(
+        <HomeScreen
+          onSelect={id=>{setActiveTopic(id);setView('topic')}}
+          progress={progress} xp={xp} totalCorrect={totalCorrect}/>
+      )}
+      {view==='topic'&&topic&&(
+        <TopicView
+          topic={topic}
+          progress={progress}
+          onBack={()=>setView('home')}
+          onQuizDone={handleQuizDone}
+          xp={xp} addXp={addXp}/>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
